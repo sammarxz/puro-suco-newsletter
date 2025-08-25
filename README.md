@@ -10,7 +10,8 @@ Newsletter semanal com as melhores notícias de **tech**, **desenvolvimento** e 
 - **React** - Componentes interativos
 - **React Email** - Templates de email com componentes
 - **Resend** - Serviço de envio de emails
-- **Cloudflare Pages** - Hosting e deployment
+- **Turso (libSQL)** - Banco de dados Edge para subscribers
+- **Dependency Injection** - Gerenciamento de dependências
 - **Clean Architecture** - Arquitetura de software escalável
 
 ## 🏗️ Arquitetura
@@ -129,18 +130,23 @@ readingTime: 3
 
 ## 🚀 Deployment
 
-### Cloudflare Pages
+### Turso (libSQL)
 
-1. **Configure o projeto no Cloudflare**:
-   - Framework preset: `Astro`
-   - Build command: `npm run build`
-   - Build output directory: `dist`
+Este projeto utiliza o [Turso](https://turso.tech) como banco de dados, uma solução SQLite embarcada e distribuída, acessível via `libSQL`.
 
-2. **Variáveis de ambiente**:
-   - `RESEND_API_KEY`: Sua chave da API Resend
-   - `PUBLIC_SITE_URL`: URL do seu site
+1.  **Crie uma conta no Turso** e um novo banco de dados.
+2.  **Obtenha suas credenciais**: `URL` e `AUTH_TOKEN`.
+3.  **Configure as variáveis de ambiente** no seu `.env` e na plataforma de deploy:
+    - `DATABASE_URL`: URL de conexão do seu banco Turso.
+    - `DATABASE_AUTH_TOKEN`: Token de autenticação do seu banco Turso.
 
-3. **GitHub Actions**: O workflow em `.github/workflows/deploy.yml` automatiza o deploy
+### Migrações
+
+As migrações do banco de dados são gerenciadas via scripts TypeScript. Para rodar as migrações:
+
+```bash
+npm run db:migrate
+```
 
 ### Secrets necessários
 
@@ -148,8 +154,8 @@ Configure no GitHub Secrets:
 
 - `RESEND_API_KEY`
 - `PUBLIC_SITE_URL`
-- `CLOUDFLARE_API_TOKEN`
-- `CLOUDFLARE_ACCOUNT_ID`
+- `DATABASE_URL`
+- `DATABASE_AUTH_TOKEN`
 
 ## 🔧 Funcionalidades
 
@@ -160,6 +166,7 @@ Configure no GitHub Secrets:
 - ✅ **Sistema de unsubscribe** com um clique
 - ✅ **Content collections** para gerenciar newsletters
 - ✅ **Error handling** robusto com logging
+- ✅ **Dependency Injection** para gerenciamento de dependências
 - ✅ **TypeScript strict mode**
 - ✅ **Linting e formatação** automatizados
 - ✅ **CI/CD** com GitHub Actions
