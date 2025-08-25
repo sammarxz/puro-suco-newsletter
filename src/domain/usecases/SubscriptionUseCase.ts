@@ -53,13 +53,16 @@ export class SubscriptionUseCase {
 
         if (existingSubscriber.isUnsubscribed()) {
           // Reativar subscriber existente
-          const newSubscriber = Subscriber.create(email)
-          await this.subscriberRepository.save(newSubscriber)
+          existingSubscriber.reactivate()
+          await this.subscriberRepository.save(existingSubscriber)
+
+          const confirmationUrl = `${baseUrl}/api/confirm/${existingSubscriber.getUnsubscribeToken()}`
+          await this.emailService.sendConfirmationEmail(email, confirmationUrl)
 
           return {
             success: true,
             message: 'Inscrição realizada com sucesso! Confirme seu email.',
-            subscriber: newSubscriber,
+            subscriber: existingSubscriber,
           }
         }
       }

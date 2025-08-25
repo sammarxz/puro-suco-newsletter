@@ -102,6 +102,15 @@ export class Subscriber {
     this.unsubscribedAt = new Date()
   }
 
+  reactivate(): void {
+    if (this.status !== SubscriberStatus.UNSUBSCRIBED) {
+      throw new Error('Subscriber must be unsubscribed to be reactivated')
+    }
+    this.status = SubscriberStatus.PENDING_CONFIRMATION
+    this.confirmedAt = undefined
+    this.unsubscribedAt = undefined
+  }
+
   isActive(): boolean {
     return this.status === SubscriberStatus.CONFIRMED
   }
