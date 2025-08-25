@@ -1,0 +1,92 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import NewsletterCTA from '../components/NewsletterCTA.astro'
+import NewsletterFooter from '../components/NewsletterFooter.astro'
+import { getNewslettersWithAutoFeatured, formatDate } from '../lib/newsletter-utils'
+
+const sortedNewsletters = await getNewslettersWithAutoFeatured()
+---
+
+<BaseLayout
+  title="Arquivo - Puro Suco Newsletter"
+  description="Todas as edições da newsletter Puro Suco sobre desenvolvimento e design."
+>
+  <main class="container max-w-2xl mx-auto px-4 py-8 md:px-6 md:py-16">
+    <header class="mb-8 md:mb-12">
+      <div class="mb-6">
+        <a
+          href="/"
+          class="text-amber-500 hover:text-amber-400 transition-colors text-sm font-medium"
+        >
+          ← Voltar ao início
+        </a>
+      </div>
+
+      <h1
+        class="text-3xl sm:text-4xl md:text-5xl text-gray-900 font-serif leading-tight mb-3 md:mb-4"
+      >
+        Arquivo da Newsletter
+      </h1>
+
+      <p class="text-base sm:text-lg md:text-xl text-gray-700 leading-relaxed">
+        Todas as edições anteriores do Puro Suco. Conteúdo curado sobre desenvolvimento e design.
+      </p>
+    </header>
+
+    <hr class="border-gray-200 mb-8 md:mb-12" />
+
+    <div class="space-y-6 md:space-y-8">
+      {
+        sortedNewsletters.map(newsletter => (
+          <article class="border-b border-gray-200 pb-6 md:pb-8 last:border-b-0">
+            <div class="flex items-center gap-2 sm:gap-4 mb-3 md:mb-4 flex-wrap">
+              <span class="text-xs font-medium px-3 py-1 bg-gray-100 text-gray-600 rounded-full">
+                Edição #{newsletter.data.issue}
+              </span>
+              {newsletter.data.featured && (
+                <span class="text-xs font-medium px-3 py-1 bg-amber-100 text-amber-700 rounded-full">
+                  ⭐ Destaque
+                </span>
+              )}
+              <time class="text-sm text-gray-500">{formatDate(newsletter.data.publishedAt)}</time>
+            </div>
+
+            <h2 class="text-xl md:text-2xl font-serif text-gray-900 mb-2 md:mb-3">
+              <a
+                href={`/newsletters/${newsletter.slug}`}
+                class="hover:text-amber-500 transition-colors"
+              >
+                {newsletter.data.title}
+              </a>
+            </h2>
+
+            <p class="text-sm md:text-base text-gray-700 mb-3 md:mb-4 leading-relaxed">
+              {newsletter.data.description}
+            </p>
+
+            <div class="flex items-center gap-3 md:gap-4 text-sm flex-wrap">
+              <a
+                href={`/newsletters/${newsletter.slug}`}
+                class="text-amber-500 hover:text-amber-400 font-medium transition-colors"
+              >
+                Ler edição →
+              </a>
+              <span class="text-gray-500">{newsletter.data.readingTime} min de leitura</span>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+
+    <!-- Newsletter CTA -->
+    <NewsletterCTA
+      class="mt-16"
+      showArchiveLink={false}
+      title="Não perca as próximas edições"
+      description="Inscreva-se para receber o Puro Suco toda segunda-feira no seu email."
+    />
+
+    <!-- Footer -->
+    <NewsletterFooter />
+  </main>
+</BaseLayout>

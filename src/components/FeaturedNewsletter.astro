@@ -1,0 +1,43 @@
+---
+import { getFeaturedNewsletter, formatDate } from '../lib/newsletter-utils'
+
+const featuredNewsletter = await getFeaturedNewsletter()
+---
+
+{
+  featuredNewsletter && (
+    <section class="bg-amber-50 border border-amber-200 rounded-lg p-6 mt-8">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-xs font-semibold px-3 py-1 bg-amber-200 text-amber-800 rounded-full">
+          ⭐ Última Edição
+        </span>
+        <span class="text-xs text-amber-700">
+          {formatDate(featuredNewsletter.data.publishedAt)}
+        </span>
+      </div>
+
+      <h3 class="text-lg font-serif text-gray-900 mb-2">
+        <a
+          href={`/newsletters/${featuredNewsletter.slug}`}
+          class="hover:text-amber-600 transition-colors"
+        >
+          {featuredNewsletter.data.title}
+        </a>
+      </h3>
+
+      <p class="text-sm text-gray-700 mb-4 leading-relaxed">
+        {featuredNewsletter.data.description}
+      </p>
+
+      <div class="flex items-center gap-4 text-sm">
+        <a
+          href={`/newsletters/${featuredNewsletter.slug}`}
+          class="text-amber-600 hover:text-amber-500 font-medium transition-colors"
+        >
+          Ler edição →
+        </a>
+        <span class="text-gray-500">{featuredNewsletter.data.readingTime} min de leitura</span>
+      </div>
+    </section>
+  )
+}
