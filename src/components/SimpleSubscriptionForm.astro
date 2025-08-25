@@ -1,0 +1,17 @@
+---
+import Button from './ui/Button.astro'
+import Input from './ui/Input.astro'
+
+export interface Props {
+  class?: string
+}
+
+const { class: className = '' } = Astro.props
+---
+
+<div class={className}>
+  <form class="flex flex-col gap-2" method="POST" action="/api/subscribe">
+    <Input type="email" name="email" placeholder="seu@email.com" required />
+    <Button type="submit" variant="primary" full> Quero receber o Puro Suco </Button>
+  </form>
+</div>

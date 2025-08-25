@@ -1,0 +1,59 @@
+---
+export interface Props {
+  type?: 'text' | 'email' | 'password'
+  placeholder?: string
+  value?: string
+  name?: string
+  id?: string
+  required?: boolean
+  disabled?: boolean
+  class?: string
+  size?: 'sm' | 'md' | 'lg'
+  variant?: 'default' | 'error' | 'success'
+}
+
+const {
+  type = 'text',
+  placeholder = '',
+  value = '',
+  name,
+  id,
+  required = false,
+  disabled = false,
+  class: className = '',
+  size = 'md',
+  variant = 'default',
+  ...props
+} = Astro.props
+
+const baseClasses =
+  'block w-full font-sans leading-normal text-gray-900 bg-white border border-gray-300 rounded-lg transition-all duration-150 focus:border-amber-400 focus:ring-2 focus:ring-amber-100 focus:outline-none'
+
+const sizeClasses = {
+  sm: 'px-3 py-1 text-sm',
+  md: 'px-4 py-3 text-base',
+  lg: 'px-5 py-4 text-lg',
+}
+
+const variantClasses = {
+  default: '',
+  error: 'input--error',
+  success: 'input--success',
+}
+
+const allClasses = [baseClasses, sizeClasses[size], variantClasses[variant], className]
+  .filter(Boolean)
+  .join(' ')
+---
+
+<input
+  type={type}
+  placeholder={placeholder}
+  value={value}
+  name={name}
+  id={id}
+  required={required}
+  disabled={disabled}
+  class={allClasses}
+  {...props}
+/>

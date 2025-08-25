@@ -1,0 +1,53 @@
+---
+export interface Props {
+  variant?: 'primary' | 'secondary' | 'ghost'
+  size?: 'sm' | 'md' | 'lg'
+  class?: string
+  type?: 'button' | 'submit' | 'reset'
+  disabled?: boolean
+  full?: boolean
+  icon?: boolean
+}
+
+const {
+  variant = 'primary',
+  size = 'md',
+  class: className = '',
+  type = 'button',
+  disabled = false,
+  full = false,
+  icon = false,
+  ...props
+} = Astro.props
+
+const baseClasses =
+  'inline-flex items-center justify-center font-medium font-sans rounded-lg cursor-pointer transition-all duration-150 whitespace-nowrap focus-visible:outline-2 focus-visible:outline-gray-400 focus-visible:outline-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none'
+
+const variantClasses = {
+  primary: 'bg-amber-400 text-gray-900 hover:bg-amber-300 transition-colors font-semibold',
+  secondary:
+    'bg-white text-gray-700 border border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-colors',
+  ghost: 'bg-transparent text-gray-700 hover:text-gray-900 transition-colors',
+}
+
+const sizeClasses = {
+  sm: icon ? 'p-1' : 'px-3 py-1 text-sm rounded-md',
+  md: icon ? 'p-2' : 'px-4 py-3 text-base',
+  lg: icon ? 'p-3' : 'px-6 py-4 text-lg',
+}
+
+const allClasses = [
+  baseClasses,
+  variantClasses[variant],
+  sizeClasses[size],
+  full ? 'w-full' : '',
+  icon ? 'aspect-square' : '',
+  className,
+]
+  .filter(Boolean)
+  .join(' ')
+---
+
+<button type={type} disabled={disabled} class={allClasses} {...props}>
+  <slot />
+</button>
