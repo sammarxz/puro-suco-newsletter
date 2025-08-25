@@ -197,7 +197,7 @@ export class TursoSubscriberRepository implements SubscriberRepository {
   /**
    * Converte uma linha do banco em uma entidade Subscriber
    */
-  private rowToSubscriber(row: any): Subscriber {
+  private rowToSubscriber(row: Record<string, unknown>): Subscriber {
     return Subscriber.fromPersistence({
       id: row.id as string,
       email: row.email as string,

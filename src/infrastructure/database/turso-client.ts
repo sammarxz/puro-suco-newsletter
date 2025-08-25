@@ -41,7 +41,7 @@ class TursoClient {
   /**
    * Execute uma query com tratamento de erros
    */
-  public async execute(sql: string, args?: any[]) {
+  public async execute(sql: string, args?: unknown[]) {
     try {
       return await this.client.execute({ sql, args })
     } catch (error) {
@@ -53,7 +53,7 @@ class TursoClient {
   /**
    * Execute múltiplas queries em uma transação usando batch
    */
-  public async batch(queries: Array<{ sql: string; args?: any[] }>) {
+  public async batch(queries: Array<{ sql: string; args?: unknown[] }>) {
     try {
       return await this.client.batch(queries.map(({ sql, args }) => ({ sql, args })))
     } catch (error) {
@@ -66,14 +66,16 @@ class TursoClient {
    * Execute múltiplas queries em uma transação com callback
    */
   public async transaction<T>(
-    callback: (tx: { execute: (sql: string, args?: any[]) => Promise<any> }) => Promise<T>
+    callback: (tx: {
+      execute: (sql: string, args?: unknown[]) => Promise<ClientResult>
+    }) => Promise<T>
   ): Promise<T> {
     try {
       // Para Turso, vamos simular transação coletando as queries e executando como batch
-      const queries: Array<{ sql: string; args?: any[] }> = []
+      const queries: Array<{ sql: string; args?: unknown[] }> = []
 
       const tx = {
-        execute: (sql: string, args?: any[]) => {
+        execute: (sql: string, args?: unknown[]) => {
           queries.push({ sql, args })
           return Promise.resolve({ rows: [], rowsAffected: 0 })
         },
@@ -85,7 +87,7 @@ class TursoClient {
         return (await this.batch(queries)) as T
       }
 
-      return {} as T
+      return undefined as T
     } catch (error) {
       console.error('Turso transaction error:', error)
       throw error
@@ -102,11 +104,13 @@ class TursoClient {
 
 // Lazy initialization - criado apenas quando necessário
 export const tursoClient = {
-  execute: (sql: string, args?: any[]) => TursoClient.getInstance().execute(sql, args),
-  batch: (queries: Array<{ sql: string; args?: any[] }>) =>
+  execute: (sql: string, args?: unknown[]) => TursoClient.getInstance().execute(sql, args),
+  batch: (queries: Array<{ sql: string; args?: unknown[] }>) =>
     TursoClient.getInstance().batch(queries),
   transaction: <T>(
-    callback: (tx: { execute: (sql: string, args?: any[]) => Promise<any> }) => Promise<T>
+    callback: (tx: {
+      execute: (sql: string, args?: unknown[]) => Promise<ClientResult>
+    }) => Promise<T>
   ) => TursoClient.getInstance().transaction(callback),
   close: () => TursoClient.getInstance().close(),
 }

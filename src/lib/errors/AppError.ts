@@ -101,7 +101,7 @@ export class InternalServerError extends AppError {
   readonly statusCode = 500
   readonly isOperational = false
 
-  constructor(message: string = 'Internal server error', context?: Record<string, any>) {
+  constructor(message: string = 'Internal server error', context?: Record<string, unknown>) {
     super(message, context)
   }
 }
