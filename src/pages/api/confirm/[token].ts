@@ -7,7 +7,7 @@ const paramsSchema = z.object({
   token: z.string().min(1),
 })
 
-export const GET: APIRoute = async ({ params, url, redirect }) => {
+export const GET: APIRoute = async ({ params }) => {
   try {
     const { token } = paramsSchema.parse(params)
 
@@ -18,15 +18,38 @@ export const GET: APIRoute = async ({ params, url, redirect }) => {
     const confirmationResult = await subscriptionUseCase.confirmSubscription(token)
 
     if (!confirmationResult.success) {
-      const baseUrl = import.meta.env.PUBLIC_SITE_URL || url.origin
-      return redirect(`${baseUrl}?error=invalid-token`)
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: confirmationResult.message || 'Token inválido',
+          statusCode: 400,
+        }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      )
     }
 
-    const baseUrl = import.meta.env.PUBLIC_SITE_URL || url.origin
-    return redirect(`${baseUrl}?confirmed=true`)
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: confirmationResult.message || 'Email confirmado com sucesso!',
+        statusCode: 200,
+      }),
+      {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    )
   } catch (error) {
     console.error('Confirmation error:', error)
-    const baseUrl = import.meta.env.PUBLIC_SITE_URL || url.origin
-    return redirect(`${baseUrl}?error=confirmation-failed`)
+    return new Response(
+      JSON.stringify({ success: false, message: 'Erro interno na confirmação', statusCode: 500 }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    )
   }
 }

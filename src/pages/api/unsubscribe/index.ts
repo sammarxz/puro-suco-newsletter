@@ -8,7 +8,7 @@ const querySchema = z.object({
   token: z.string().min(1).optional(),
 })
 
-export const GET: APIRoute = async ({ url, redirect }) => {
+export const GET: APIRoute = async ({ url }) => {
   try {
     const params = Object.fromEntries(url.searchParams.entries())
     const { email, token } = querySchema.parse(params)
@@ -20,15 +20,42 @@ export const GET: APIRoute = async ({ url, redirect }) => {
     const result = await subscriptionUseCase.unsubscribe(email, token)
 
     if (!result.success) {
-      const baseUrl = import.meta.env.PUBLIC_SITE_URL || url.origin
-      return redirect(`${baseUrl}/unsubscribe?error=invalid-request`)
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: result.message || 'Requisição inválida',
+          statusCode: 400,
+        }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      )
     }
 
-    const baseUrl = import.meta.env.PUBLIC_SITE_URL || url.origin
-    return redirect(`${baseUrl}/unsubscribe?success=true`)
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: result.message || 'Inscrição cancelada com sucesso!',
+        statusCode: 200,
+      }),
+      {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    )
   } catch (error) {
     console.error('Unsubscribe error:', error)
-    const baseUrl = import.meta.env.PUBLIC_SITE_URL || url.origin
-    return redirect(`${baseUrl}/unsubscribe?error=unsubscribe-failed`)
+    return new Response(
+      JSON.stringify({
+        success: false,
+        message: 'Erro interno ao cancelar inscrição',
+        statusCode: 500,
+      }),
+      {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    )
   }
 }
