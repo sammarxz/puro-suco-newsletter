@@ -22,3 +22,11 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# temporary files
+*.tmp.*
+*~
+*.bak
+*.swp
+.vscode/
+*.log
