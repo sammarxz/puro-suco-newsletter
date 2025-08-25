@@ -1,0 +1,32 @@
+---
+import { container, TOKENS } from '../../lib/container/bindings'
+import { SubscriptionUseCase } from '../../domain/usecases/SubscriptionUseCase'
+
+const token = Astro.url.searchParams.get('t')
+
+if (!token) {
+  return Astro.redirect('/unsubscribe?error=invalid-request')
+}
+
+let result = null
+let error = null
+
+try {
+  const subscriptionUseCase = await container.resolve<SubscriptionUseCase>(
+    TOKENS.SUBSCRIPTION_USE_CASE
+  )
+  result = await subscriptionUseCase.unsubscribe('', token)
+} catch (_e) {
+  error = 'unsubscribe-failed'
+}
+
+if (result && !result.success) {
+  error = 'invalid-request'
+}
+
+if (error) {
+  return Astro.redirect(`/unsubscribe?error=${error}`)
+}
+
+return Astro.redirect('/unsubscribe?success=true')
+---

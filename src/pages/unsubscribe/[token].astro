@@ -1,0 +1,86 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { SubscriptionService } from '../../lib/services/SubscriptionService'
+
+const { token } = Astro.params
+
+if (!token || typeof token !== 'string') {
+  return Astro.redirect('/404')
+}
+
+let result = null
+let error = null
+
+try {
+  const subscriptionService = new SubscriptionService()
+  result = await subscriptionService.unsubscribe({ token })
+} catch (_err) {
+  error = 'Erro interno do servidor. Tente novamente mais tarde.'
+}
+---
+
+<BaseLayout
+  title="Cancelar Inscrição - Puro Suco Newsletter"
+  description="Página para cancelar a inscrição da newsletter Puro Suco."
+>
+  <main class="min-h-screen bg-white flex items-center justify-center px-6 lg:px-8">
+    <div class="max-w-md w-full text-center">
+      <div class="mb-8">
+        <span class="text-6xl">🍊</span>
+      </div>
+
+      <h1
+        class="text-3xl font-bold tracking-tight text-black mb-6"
+        style="font-family: var(--font-serif)"
+      >
+        Cancelar Inscrição
+      </h1>
+
+      {
+        result?.success ? (
+          <div class="bg-green-50 border border-green-200 rounded-lg p-6 mb-6">
+            <div class="text-green-600 text-4xl mb-4">✓</div>
+            <h2 class="text-lg font-semibold text-green-800 mb-2">
+              Inscrição cancelada com sucesso
+            </h2>
+            <p class="text-green-700">Você não receberá mais emails da newsletter Puro Suco.</p>
+          </div>
+        ) : (
+          <div class="bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
+            <div class="text-red-600 text-4xl mb-4">✕</div>
+            <h2 class="text-lg font-semibold text-red-800 mb-2">Erro ao cancelar inscrição</h2>
+            <p class="text-red-700">{result?.message || error || 'Token inválido ou expirado.'}</p>
+          </div>
+        )
+      }
+
+      <div class="text-sm text-gray-600 mb-8">
+        <p>Mudou de ideia? Você pode se inscrever novamente a qualquer momento.</p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row gap-3 justify-center">
+        <a
+          href="/"
+          class="inline-flex items-center justify-center px-6 py-3 bg-black text-white font-medium rounded-lg hover:bg-gray-800 transition-colors"
+        >
+          Voltar ao início
+        </a>
+
+        {
+          !result?.success && (
+            <a
+              href="/#subscribe"
+              class="inline-flex items-center justify-center px-6 py-3 bg-white text-gray-700 font-medium rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+            >
+              Inscrever-se novamente
+            </a>
+          )
+        }
+      </div>
+
+      <div class="mt-12 text-xs text-gray-400">
+        <p>Se você continuar tendo problemas, entre em contato conosco.</p>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
