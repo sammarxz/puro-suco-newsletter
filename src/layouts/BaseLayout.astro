@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css'
+import ToastContainer from '../components/ui/ToastContainer.astro'
 
 interface Props {
   title: string
@@ -49,5 +50,6 @@ const {
   </head>
   <body class="layout">
     <slot />
+    <ToastContainer />
   </body>
 </html>
