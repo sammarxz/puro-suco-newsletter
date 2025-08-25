@@ -1,0 +1,25 @@
+---
+export interface Props {
+  class?: string
+}
+
+const { class: className = '' } = Astro.props
+
+const currentYear = new Date().getFullYear()
+---
+
+<footer class={`border-t border-gray-200 mt-16 pt-8 ${className}`}>
+  <div class="text-center text-sm text-gray-500">
+    <p class="mb-2">
+      © {currentYear} Puro Suco Newsletter. Todos os direitos reservados.
+    </p>
+    <p>
+      Criado com ❤️ por <a
+        href="https://marxz.me"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-amber-500 hover:text-amber-400 transition-colors font-medium">Sam Marxz</a
+      >
+    </p>
+  </div>
+</footer>
