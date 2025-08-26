@@ -56,7 +56,7 @@ export class SubscriptionUseCase {
           existingSubscriber.reactivate()
           await this.subscriberRepository.save(existingSubscriber)
 
-          const confirmationUrl = `${baseUrl}/api/confirm/${existingSubscriber.getUnsubscribeToken()}`
+          const confirmationUrl = `${baseUrl}/confirm/${existingSubscriber.getUnsubscribeToken()}`
           await this.emailService.sendConfirmationEmail(email, confirmationUrl)
 
           return {
@@ -70,7 +70,7 @@ export class SubscriptionUseCase {
       const subscriber = Subscriber.create(email)
       await this.subscriberRepository.save(subscriber)
 
-      const confirmationUrl = `${baseUrl}/api/confirm/${subscriber.getUnsubscribeToken()}`
+      const confirmationUrl = `${baseUrl}/confirm/${subscriber.getUnsubscribeToken()}`
       await this.emailService.sendConfirmationEmail(email, confirmationUrl)
 
       return {
@@ -89,7 +89,7 @@ export class SubscriptionUseCase {
   /**
    * Confirma a inscrição via token de confirmação
    */
-  async confirmSubscription(token: string): Promise<ConfirmationResult> {
+  async confirmSubscription(token: string, baseUrl: string): Promise<ConfirmationResult> {
     try {
       const subscriber = await this.subscriberRepository.findByToken(token)
 
@@ -116,6 +116,9 @@ export class SubscriptionUseCase {
 
       subscriber.confirm()
       await this.subscriberRepository.save(subscriber)
+
+      const unsubscribeUrl = `${baseUrl}/unsubscribe/${subscriber.getUnsubscribeToken()}`
+      await this.emailService.sendWelcomeEmail(subscriber.getEmail(), unsubscribeUrl)
 
       return {
         success: true,

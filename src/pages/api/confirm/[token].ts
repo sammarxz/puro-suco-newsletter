@@ -7,7 +7,7 @@ const paramsSchema = z.object({
   token: z.string().min(1),
 })
 
-export const GET: APIRoute = async ({ params }) => {
+export const GET: APIRoute = async ({ params, url }) => {
   try {
     const { token } = paramsSchema.parse(params)
 
@@ -15,7 +15,9 @@ export const GET: APIRoute = async ({ params }) => {
       TOKENS.SUBSCRIPTION_USE_CASE
     )
 
-    const confirmationResult = await subscriptionUseCase.confirmSubscription(token)
+    const baseUrl = url.origin
+
+    const confirmationResult = await subscriptionUseCase.confirmSubscription(token, baseUrl)
 
     if (!confirmationResult.success) {
       return new Response(
