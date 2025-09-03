@@ -136,6 +136,30 @@ curl -X POST http://localhost:3000/api/send-newsletter \
   -d '{"slug": "primeira-edicao"}'
 ```
 
+## 📡 RSS Feed
+
+O projeto inclui um RSS feed completo para syndication e consumo via agregadores:
+
+- **Endpoint**: `/rss.xml`
+- **Formato**: RSS 2.0 compatível
+- **Conteúdo**: Todas as newsletters publicadas ordenadas por data
+- **Atualização**: Automática a cada build
+- **Língua**: Configurado para português brasileiro
+
+### Consumindo o RSS
+
+```bash
+# Acesso direto
+curl https://seudominio.com/rss.xml
+
+# Agregadores populares
+- Feedly: https://feedly.com/i/subscription/feed/https://seudominio.com/rss.xml
+- Inoreader: Adicionar por URL
+- NewsBlur: Importar feed
+```
+
+O RSS é automaticamente descoberto pelos navegadores através da tag `<link rel="alternate">` no `<head>`.
+
 ## 🗂️ Content Collections
 
 As newsletters são gerenciadas como content collections do Astro com frontmatter rico:
@@ -213,6 +237,7 @@ npm run db:migrate
 - ✅ **Linting e formatação** automatizados com Husky
 - ✅ **Testes automatizados** com Vitest
 - ✅ **Toast notifications** para feedback visual
+- ✅ **RSS feed** para syndication e agregadores
 
 ## 📊 Performance
 
