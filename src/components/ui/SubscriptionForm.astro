@@ -1,0 +1,126 @@
+---
+import Button from './Button.astro'
+import Input from './Input.astro'
+
+export interface Props {
+  class?: string
+  formId?: string
+  layout?: 'vertical' | 'horizontal'
+  buttonText?: string
+  buttonSize?: 'sm' | 'md' | 'lg'
+  inputSize?: 'sm' | 'md' | 'lg'
+  fullWidth?: boolean
+}
+
+const {
+  class: className = '',
+  formId,
+  layout = 'vertical',
+  buttonText = 'Inscrever-se',
+  buttonSize = 'md',
+  inputSize = 'md',
+  fullWidth = false,
+} = Astro.props
+
+// Generate unique form ID if not provided
+const finalFormId = formId || `subscription-form-${Math.random().toString(36).substring(2, 11)}`
+
+// Layout classes
+const formClasses =
+  layout === 'horizontal' ? 'flex flex-col gap-3 sm:flex-row' : 'flex flex-col gap-2'
+
+const inputContainerClasses = layout === 'horizontal' ? 'flex-1' : ''
+---
+
+<div class={className}>
+  <form class={formClasses} method="POST" action="/api/subscribe" id={finalFormId}>
+    <div class={inputContainerClasses}>
+      <Input type="email" name="email" placeholder="seu@email.com" required size={inputSize} />
+    </div>
+    <Button type="submit" variant="primary" size={buttonSize} full={fullWidth}>
+      {buttonText}
+    </Button>
+  </form>
+</div>
+
+<script>
+  // Type declaration for global toast function
+  declare global {
+    interface Window {
+      showToast?: (message: string, type: 'success' | 'error') => void
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // Encontrar todos os formulários de inscrição
+    const forms = document.querySelectorAll('form[action="/api/subscribe"]')
+
+    forms.forEach(form => {
+      console.log('Interceptando form:', form.id)
+
+      form.addEventListener('submit', async e => {
+        console.log('Submit interceptado para form:', form.id)
+        e.preventDefault()
+
+        const formData = new FormData(form as HTMLFormElement)
+        const email = formData.get('email')
+
+        if (!email) {
+          console.log('Email vazio')
+          if (window.showToast) {
+            window.showToast('Por favor, digite seu email', 'error')
+          } else {
+            alert('Por favor, digite seu email')
+          }
+          return
+        }
+
+        const submitButton = form.querySelector('button[type="submit"]') as HTMLButtonElement | null
+        const originalText = submitButton?.textContent || 'Inscrever-se'
+
+        try {
+          if (submitButton) {
+            submitButton.disabled = true
+            submitButton.textContent = 'Enviando...'
+          }
+
+          console.log('Enviando requisição AJAX para /api/subscribe')
+          const response = await fetch('/api/subscribe', {
+            method: 'POST',
+            body: formData,
+          })
+
+          const result = await response.json()
+          console.log('Resposta recebida:', result)
+
+          if (result.success) {
+            if (window.showToast) {
+              window.showToast(result.message, 'success')
+            } else {
+              alert(result.message)
+            }
+            ;(form as HTMLFormElement).reset()
+          } else {
+            if (window.showToast) {
+              window.showToast(result.message, 'error')
+            } else {
+              alert(result.message)
+            }
+          }
+        } catch (error) {
+          console.error('Erro na requisição:', error)
+          if (window.showToast) {
+            window.showToast('Erro ao processar inscrição. Tente novamente.', 'error')
+          } else {
+            alert('Erro ao processar inscrição. Tente novamente.')
+          }
+        } finally {
+          if (submitButton) {
+            submitButton.disabled = false
+            submitButton.textContent = originalText
+          }
+        }
+      })
+    })
+  })
+</script>
