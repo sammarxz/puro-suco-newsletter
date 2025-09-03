@@ -51,5 +51,19 @@ const {
   <body class="layout">
     <slot />
     <ToastContainer />
+
+    <script>
+      import { showToast } from '../lib/utils/toast'
+
+      // Type declaration for global toast function
+      declare global {
+        interface Window {
+          showToast?: (message: string, type: 'success' | 'error') => void
+        }
+      }
+
+      // Tornar showToast disponível globalmente
+      window.showToast = showToast
+    </script>
   </body>
 </html>

@@ -1,6 +1,5 @@
 ---
-import Button from './ui/Button.astro'
-import Input from './ui/Input.astro'
+import SubscriptionForm from './ui/SubscriptionForm.astro'
 
 export interface Props {
   class?: string
@@ -9,9 +8,10 @@ export interface Props {
 const { class: className = '' } = Astro.props
 ---
 
-<div class={className}>
-  <form class="flex flex-col gap-2" method="POST" action="/api/subscribe">
-    <Input type="email" name="email" placeholder="seu@email.com" required />
-    <Button type="submit" variant="primary" full> Quero receber o Puro Suco </Button>
-  </form>
-</div>
+<SubscriptionForm
+  class={className}
+  formId="simple-subscription-form"
+  layout="vertical"
+  buttonText="Quero receber o Puro Suco"
+  fullWidth={true}
+/>

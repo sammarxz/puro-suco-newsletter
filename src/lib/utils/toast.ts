@@ -1,6 +1,4 @@
-import type { Props as ToastItemProps } from '../components/ui/ToastItem.astro'
-
-type ToastType = ToastItemProps['type']
+type ToastType = 'success' | 'error' | 'info'
 
 const TOAST_CONTAINER_ID = 'toast-container'
 const TOAST_DURATION = 3000 // milliseconds
