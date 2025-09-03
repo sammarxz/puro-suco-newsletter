@@ -31,7 +31,7 @@ export function createUnsubscribeUrl(token: string): string {
  * Create confirmation URL with token
  */
 export function createConfirmationUrl(token: string): string {
-  return createSiteUrl(`/api/confirm/${token}`)
+  return createSiteUrl(`/confirm/${token}`)
 }
 
 /**

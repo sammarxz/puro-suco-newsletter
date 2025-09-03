@@ -70,7 +70,7 @@ export class SubscriptionUseCase {
       const subscriber = Subscriber.create(email)
       await this.subscriberRepository.save(subscriber)
 
-      const confirmationUrl = `${baseUrl}/api/confirm/${subscriber.getUnsubscribeToken()}`
+      const confirmationUrl = `${baseUrl}/confirm/${subscriber.getUnsubscribeToken()}`
       await this.emailService.sendConfirmationEmail(email, confirmationUrl)
 
       return {

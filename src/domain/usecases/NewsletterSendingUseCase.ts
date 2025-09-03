@@ -170,7 +170,7 @@ export class NewsletterSendingUseCase {
       }
 
       const baseUrl = process.env.PUBLIC_SITE_URL || 'http://localhost:3000'
-      const confirmationUrl = `${baseUrl}/api/confirm/${subscriber.getUnsubscribeToken()}`
+      const confirmationUrl = `${baseUrl}/confirm/${subscriber.getUnsubscribeToken()}`
 
       await this.emailService.sendConfirmationEmail(subscriber.getEmail(), confirmationUrl)
       return true

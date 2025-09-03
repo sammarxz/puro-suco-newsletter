@@ -56,7 +56,7 @@ describe('SubscriptionUseCase', () => {
       )
       expect(mockEmailService.sendConfirmationEmail).toHaveBeenCalledWith(
         email,
-        expect.stringContaining('/api/confirm/')
+        expect.stringContaining('/confirm/')
       )
     })
 
