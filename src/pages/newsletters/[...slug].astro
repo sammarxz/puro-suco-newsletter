@@ -3,6 +3,7 @@ import BaseLayout from '../../layouts/BaseLayout.astro'
 import ShareButtons from '../../components/ShareButtons.astro'
 import NewsletterCTA from '../../components/NewsletterCTA.astro'
 import NewsletterFooter from '../../components/NewsletterFooter.astro'
+import Badge from '../../components/ui/Badge.astro'
 import { getNewslettersWithAutoFeatured, formatDate } from '../../lib/newsletter-utils'
 
 export const prerender = true
@@ -42,14 +43,14 @@ const { Content } = await newsletter.render()
       </div>
 
       <div class="flex items-center gap-2 sm:gap-4 mb-4 md:mb-6 flex-wrap">
-        <span class="text-xs font-medium px-3 py-1 bg-gray-100 text-gray-600 rounded-full">
+        <Badge variant="default" class="border-gray-200">
           Edição #{newsletter.data.issue}
-        </span>
+        </Badge>
         {
           newsletter.data.featured && (
-            <span class="text-xs font-medium px-3 py-1 bg-amber-100 text-amber-700 rounded-full">
+            <Badge variant="featured" class="border-amber-200">
               ⭐ Destaque
-            </span>
+            </Badge>
           )
         }
         <time class="text-sm text-gray-500">
@@ -67,11 +68,7 @@ const { Content } = await newsletter.render()
         {newsletter.data.description}
       </p>
 
-      <ShareButtons
-        title={newsletter.data.title}
-        url={Astro.url.href}
-        description={newsletter.data.description}
-      />
+      <ShareButtons title={newsletter.data.title} url={Astro.url.href} />
     </header>
 
     <hr class="border-gray-200 mb-8 md:mb-12" />

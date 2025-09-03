@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro'
 import NewsletterCTA from '../components/NewsletterCTA.astro'
 import NewsletterFooter from '../components/NewsletterFooter.astro'
+import Badge from '../components/ui/Badge.astro'
 import { getNewslettersWithAutoFeatured, formatDate } from '../lib/newsletter-utils'
 
 const sortedNewsletters = await getNewslettersWithAutoFeatured()
@@ -40,14 +41,8 @@ const sortedNewsletters = await getNewslettersWithAutoFeatured()
         sortedNewsletters.map(newsletter => (
           <article class="border-b border-gray-200 pb-6 md:pb-8 last:border-b-0">
             <div class="flex items-center gap-2 sm:gap-4 mb-3 md:mb-4 flex-wrap">
-              <span class="text-xs font-medium px-3 py-1 bg-gray-100 text-gray-600 rounded-full">
-                Edição #{newsletter.data.issue}
-              </span>
-              {newsletter.data.featured && (
-                <span class="text-xs font-medium px-3 py-1 bg-amber-100 text-amber-700 rounded-full">
-                  ⭐ Destaque
-                </span>
-              )}
+              <Badge variant="default">Edição #{newsletter.data.issue}</Badge>
+              {newsletter.data.featured && <Badge variant="featured">⭐ Destaque</Badge>}
               <time class="text-sm text-gray-500">{formatDate(newsletter.data.publishedAt)}</time>
             </div>
 

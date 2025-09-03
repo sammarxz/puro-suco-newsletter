@@ -56,14 +56,14 @@ export const POST: APIRoute = async ({ request, url }) => {
     const newsletterIssue = NewsletterIssue.create({
       id: newsletterEntry.slug,
       title: newsletterEntry.data.title,
-      description: newsletterEntry.data.description || newsletterEntry.data.excerpt || '',
+      description: newsletterEntry.data.description || '',
       content: newsletterEntry.body,
       slug: newsletterEntry.slug,
       publishedAt: new Date(newsletterEntry.data.publishedAt),
       issue: newsletterEntry.data.issue || newsletterNumber,
       tags: newsletterEntry.data.tags || [],
       readingTime: readingTime,
-      previewText: newsletterEntry.data.previewText || newsletterEntry.data.excerpt || '',
+      previewText: newsletterEntry.data.previewText || '',
     })
 
     const sendingUseCase = await container.resolve<NewsletterSendingUseCase>(

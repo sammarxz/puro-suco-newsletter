@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   apps: [
     {
       name: 'puro-suco-newsletter-watcher',

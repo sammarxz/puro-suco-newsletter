@@ -10,7 +10,7 @@ const newsletters = defineCollection({
     featured: z.boolean().default(false),
     previewText: z.string().optional(),
     issue: z.number(),
-    readingTime: z.number().optional(), // Will be calculated automatically if not provided
+    readingTime: z.number().optional(),
   }),
 })
 

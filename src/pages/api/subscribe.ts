@@ -48,6 +48,9 @@ export const POST: APIRoute = async ({ request, url }) => {
 export const OPTIONS: APIRoute = () => {
   return new Response(null, {
     status: 200,
-    headers: SecurityHeadersBuilder.json().withCORS('*', 'POST, OPTIONS', 'Content-Type').build(),
+    headers: new SecurityHeadersBuilder()
+      .withContentType('application/json')
+      .withCORS('*', 'POST, OPTIONS', 'Content-Type')
+      .build(),
   })
 }

@@ -38,7 +38,7 @@ export async function getNewslettersWithAutoFeatured(): Promise<NewsletterEntry[
  */
 export async function getFeaturedNewsletter(): Promise<NewsletterEntry | null> {
   const newsletters = await getNewslettersWithAutoFeatured()
-  return newsletters.length > 0 ? newsletters[0] : null
+  return newsletters.length > 0 ? newsletters[0]! : null
 }
 
 /**
