@@ -104,7 +104,6 @@ describe('Subscriber Entity', () => {
         status: SubscriberStatus.CONFIRMED,
         subscribedAt: new Date('2024-01-01'),
         confirmedAt: new Date('2024-01-02'),
-        unsubscribedAt: undefined,
         unsubscribeToken: 'test-token',
       }
 

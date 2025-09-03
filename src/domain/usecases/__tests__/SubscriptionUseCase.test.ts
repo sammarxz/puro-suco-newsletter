@@ -109,7 +109,7 @@ describe('SubscriptionUseCase', () => {
       vi.mocked(mockSubscriberRepository.findByToken).mockResolvedValue(subscriber)
       vi.mocked(mockSubscriberRepository.save).mockResolvedValue()
 
-      const result = await useCase.confirmSubscription(token)
+      const result = await useCase.confirmSubscription(token, 'https://test.com')
 
       expect(result.success).toBe(true)
       expect(result.message).toContain('confirmado com sucesso')
@@ -120,7 +120,7 @@ describe('SubscriptionUseCase', () => {
     it('should reject invalid token', async () => {
       vi.mocked(mockSubscriberRepository.findByToken).mockResolvedValue(null)
 
-      const result = await useCase.confirmSubscription('invalid-token')
+      const result = await useCase.confirmSubscription('invalid-token', 'https://test.com')
 
       expect(result.success).toBe(false)
       expect(result.message).toContain('Token de confirmação inválido')
@@ -134,7 +134,7 @@ describe('SubscriptionUseCase', () => {
 
       vi.mocked(mockSubscriberRepository.findByToken).mockResolvedValue(subscriber)
 
-      const result = await useCase.confirmSubscription(token)
+      const result = await useCase.confirmSubscription(token, 'https://test.com')
 
       expect(result.success).toBe(true)
       expect(result.message).toContain('já confirmado')

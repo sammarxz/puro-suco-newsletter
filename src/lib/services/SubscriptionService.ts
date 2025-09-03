@@ -1,30 +1,25 @@
+import { container, TOKENS } from '../container/bindings'
 import { SubscriptionUseCase } from '../../domain/usecases/SubscriptionUseCase'
-import { InMemorySubscriberRepository } from '../../infrastructure/storage/InMemorySubscriberRepository'
-import { ResendEmailService } from '../../infrastructure/email/ResendEmailService'
 import type { SubscriptionInput, UnsubscribeInput } from '../validations/subscription'
 
 export class SubscriptionService {
-  private subscriptionUseCase: SubscriptionUseCase
-  private emailService: ResendEmailService
-
-  constructor() {
-    const subscriberRepository = new InMemorySubscriberRepository()
-    this.subscriptionUseCase = new SubscriptionUseCase(subscriberRepository)
-    this.emailService = new ResendEmailService(import.meta.env.RESEND_API_KEY)
-  }
-
   async subscribe(input: SubscriptionInput) {
-    const result = await this.subscriptionUseCase.subscribe(input.email)
+    const subscriptionUseCase = await container.resolve<SubscriptionUseCase>(
+      TOKENS.SUBSCRIPTION_USE_CASE
+    )
 
-    if (result.success && result.subscriber) {
-      const unsubscribeUrl = `${import.meta.env.PUBLIC_SITE_URL}/unsubscribe/${result.subscriber.unsubscribeToken}`
-      await this.emailService.sendWelcomeEmail(result.subscriber.email, unsubscribeUrl)
-    }
+    const baseUrl = import.meta.env.PUBLIC_SITE_URL || 'http://localhost:3000'
+    const result = await subscriptionUseCase.subscribe(input.email, baseUrl)
 
     return result
   }
 
   async unsubscribe(input: UnsubscribeInput) {
-    return await this.subscriptionUseCase.unsubscribe(input.token)
+    const subscriptionUseCase = await container.resolve<SubscriptionUseCase>(
+      TOKENS.SUBSCRIPTION_USE_CASE
+    )
+
+    // Pass empty string as email and token as second parameter
+    return await subscriptionUseCase.unsubscribe('', input.token)
   }
 }

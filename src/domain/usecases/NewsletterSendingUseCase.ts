@@ -1,7 +1,7 @@
-import { SubscriberRepository } from '../repositories/SubscriberRepository'
-import { NewsletterRepository } from '../repositories/NewsletterRepository'
+import type { SubscriberRepository } from '../repositories/SubscriberRepository'
+import type { NewsletterRepository } from '../repositories/NewsletterRepository'
 import { NewsletterIssue } from '../entities/NewsletterIssue'
-import { EmailService } from '../services/EmailService'
+import type { EmailService } from '../services/EmailService'
 
 export interface NewsletterSendingResult {
   success: boolean
@@ -117,31 +117,23 @@ export class NewsletterSendingUseCase {
     let sentCount = 0
     let failedCount = 0
 
-    // Envio em lotes para evitar sobrecarga
-    const batchSize = 50
-    for (let i = 0; i < activeSubscribers.length; i += batchSize) {
-      const batch = activeSubscribers.slice(i, i + batchSize)
-      const emailAddresses = batch.map(sub => sub.getEmail())
+    // Envio individual para permitir URLs de unsubscribe personalizadas
+    const finalBaseUrl = baseUrl || process.env.PUBLIC_SITE_URL || 'http://localhost:3000'
 
+    for (const subscriber of activeSubscribers) {
       try {
-        // Criar URL de unsubscribe personalizada para cada batch
-        // Em produção, você pode implementar um sistema mais sofisticado
-        const finalBaseUrl = baseUrl || process.env.PUBLIC_SITE_URL || 'http://localhost:3000'
+        const unsubscribeUrl = `${finalBaseUrl}/unsubscribe/${subscriber.getUnsubscribeToken()}`
 
-        // Para newsletter, precisamos criar URLs personalizadas para cada subscriber
-        // Por enquanto, vamos usar uma URL genérica e personalizar no template
-        const unsubscribeUrl = `${finalBaseUrl}/api/unsubscribe`
+        await this.emailService.sendNewsletter([subscriber.getEmail()], emailData, unsubscribeUrl)
 
-        await this.emailService.sendNewsletter(emailAddresses, emailData, unsubscribeUrl)
-
-        sentCount += emailAddresses.length
+        sentCount++
       } catch (error) {
-        failedCount += batch.length
-        console.error('Falha ao enviar lote de emails:', error)
+        failedCount++
+        console.error('Falha ao enviar email para:', subscriber.getEmail(), error)
       }
 
-      // Pequena pausa entre lotes para respeitar rate limits
-      await this.sleep(1000)
+      // Pequena pausa entre emails para respeitar rate limits
+      await this.sleep(100)
     }
 
     const success = sentCount > 0
@@ -178,7 +170,7 @@ export class NewsletterSendingUseCase {
       }
 
       const baseUrl = process.env.PUBLIC_SITE_URL || 'http://localhost:3000'
-      const confirmationUrl = `${baseUrl}/confirm/${subscriber.getUnsubscribeToken()}`
+      const confirmationUrl = `${baseUrl}/api/confirm/${subscriber.getUnsubscribeToken()}`
 
       await this.emailService.sendConfirmationEmail(subscriber.getEmail(), confirmationUrl)
       return true

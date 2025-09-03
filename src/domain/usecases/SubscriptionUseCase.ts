@@ -1,6 +1,6 @@
-import { SubscriberRepository } from '../repositories/SubscriberRepository'
+import type { SubscriberRepository } from '../repositories/SubscriberRepository'
 import { Subscriber } from '../entities/Subscriber'
-import { EmailService } from '../services/EmailService'
+import type { EmailService } from '../services/EmailService'
 
 export interface SubscriptionResult {
   success: boolean
@@ -70,7 +70,7 @@ export class SubscriptionUseCase {
       const subscriber = Subscriber.create(email)
       await this.subscriberRepository.save(subscriber)
 
-      const confirmationUrl = `${baseUrl}/confirm/${subscriber.getUnsubscribeToken()}`
+      const confirmationUrl = `${baseUrl}/api/confirm/${subscriber.getUnsubscribeToken()}`
       await this.emailService.sendConfirmationEmail(email, confirmationUrl)
 
       return {
