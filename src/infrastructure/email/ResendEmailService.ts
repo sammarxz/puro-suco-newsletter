@@ -1,10 +1,9 @@
 import { Resend } from 'resend'
 import { render } from '@react-email/render'
-import { marked } from 'marked'
 import WelcomeEmail from '../../../emails/templates/welcome-email'
 import ConfirmationEmail from '../../../emails/templates/confirmation-email'
 import NewsletterTemplate from '../../../emails/templates/newsletter-template'
-import { EmailService } from '../../domain/services/EmailService'
+import type { EmailService } from '../../domain/services/EmailService'
 
 export class ResendEmailService implements EmailService {
   private resend: Resend
@@ -13,12 +12,6 @@ export class ResendEmailService implements EmailService {
   constructor(apiKey: string, fromEmail?: string) {
     this.resend = new Resend(apiKey)
     this.fromEmail = fromEmail || 'Puro Suco <newsletter@purosuco.dev>'
-
-    // Configure marked options
-    marked.setOptions({
-      breaks: true,
-      gfm: true,
-    })
   }
 
   async sendWelcomeEmail(to: string, unsubscribeUrl: string): Promise<void> {
@@ -81,19 +74,15 @@ export class ResendEmailService implements EmailService {
     baseUnsubscribeUrl: string
   ): Promise<void> {
     try {
-      // Convert Markdown to HTML
-      const htmlContent = await marked(newsletterData.content)
-
       // Get base URL for logo in email
       const baseUrl = process.env.PUBLIC_SITE_URL || 'http://localhost:4321'
 
       const emailHtml = await render(
         NewsletterTemplate({
           title: newsletterData.title,
-          content: htmlContent,
+          content: newsletterData.content, // Pass raw markdown to the template
           previewText: newsletterData.previewText,
           issue: newsletterData.issue,
-          slug: newsletterData.slug,
           unsubscribeUrl: baseUnsubscribeUrl,
           baseUrl: baseUrl,
         })
