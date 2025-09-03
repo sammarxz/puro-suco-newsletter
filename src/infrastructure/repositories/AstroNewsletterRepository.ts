@@ -1,5 +1,5 @@
 import { getCollection } from 'astro:content'
-import { NewsletterRepository } from '../../domain/repositories/NewsletterRepository'
+import type { NewsletterRepository } from '../../domain/repositories/NewsletterRepository'
 import { NewsletterIssue } from '../../domain/entities/NewsletterIssue'
 import { calculateReadingTime } from '../../lib/reading-time'
 import type { CollectionEntry } from 'astro:content'
@@ -39,7 +39,7 @@ export class AstroNewsletterRepository implements NewsletterRepository {
 
   async findLatest(): Promise<NewsletterIssue | null> {
     const newsletters = await this.findAll()
-    return newsletters.length > 0 ? newsletters[0] : null
+    return newsletters.length > 0 ? newsletters[0]! : null
   }
 
   async findPublished(): Promise<NewsletterIssue[]> {
@@ -110,5 +110,35 @@ export class AstroNewsletterRepository implements NewsletterRepository {
       const publishedAt = newsletter.getPublishedAt()
       return publishedAt >= startDate && publishedAt <= endDate
     })
+  }
+
+  /**
+   * Save newsletter (not implemented for content-based repository)
+   */
+  async save(_newsletter: NewsletterIssue): Promise<void> {
+    throw new Error('Save operation not supported for content-based newsletter repository')
+  }
+
+  /**
+   * Update newsletter (not implemented for content-based repository)
+   */
+  async update(_newsletter: NewsletterIssue): Promise<void> {
+    throw new Error('Update operation not supported for content-based newsletter repository')
+  }
+
+  /**
+   * Find newsletter by issue number
+   */
+  async findByIssueNumber(issue: number): Promise<NewsletterIssue | null> {
+    const newsletters = await this.findAll()
+    return newsletters.find(newsletter => newsletter.getIssue() === issue) || null
+  }
+
+  /**
+   * Get total count of newsletters
+   */
+  async getTotalCount(): Promise<number> {
+    const newsletters = await this.findAll()
+    return newsletters.length
   }
 }

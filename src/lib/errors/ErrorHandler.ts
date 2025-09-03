@@ -11,15 +11,25 @@ export interface ErrorResponse {
 export class ErrorHandler {
   static handleError(error: unknown): { status: number; body: ErrorResponse } {
     if (error instanceof AppError) {
+      const body: ErrorResponse = {
+        success: false,
+        message: error.message,
+        statusCode: error.statusCode,
+      }
+
+      if ('validationErrors' in error) {
+        body.errors = Array.isArray(error.validationErrors)
+          ? error.validationErrors
+          : [error.validationErrors]
+      }
+
+      if (error.context) {
+        body.context = error.context
+      }
+
       return {
         status: error.statusCode,
-        body: {
-          success: false,
-          message: error.message,
-          statusCode: error.statusCode,
-          errors: 'validationErrors' in error ? error.validationErrors : undefined,
-          context: error.context,
-        },
+        body,
       }
     }
 

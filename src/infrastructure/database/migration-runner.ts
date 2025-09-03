@@ -65,7 +65,7 @@ export class MigrationRunner {
       const subscriberCount = await tursoClient.execute('SELECT COUNT(*) as count FROM subscribers')
 
       // Se não houver subscribers, podemos adicionar dados de teste (opcional)
-      const count = subscriberCount.rows[0].count as number
+      const count = (subscriberCount.rows[0]?.count as number) ?? 0
 
       if (count === 0) {
         console.log('Database is empty - ready for production use')

@@ -4,6 +4,9 @@ import { ResendEmailService } from '../../infrastructure/email/ResendEmailServic
 import { SubscriptionUseCase } from '../../domain/usecases/SubscriptionUseCase'
 import { NewsletterSendingUseCase } from '../../domain/usecases/NewsletterSendingUseCase'
 import { AstroNewsletterRepository } from '../../infrastructure/repositories/AstroNewsletterRepository'
+import type { SubscriberRepository } from '../../domain/repositories/SubscriberRepository'
+import type { NewsletterRepository } from '../../domain/repositories/NewsletterRepository'
+import type { EmailService } from '../../domain/services/EmailService'
 
 const TOKENS = {
   SUBSCRIBER_REPOSITORY: 'SubscriberRepository',
@@ -34,15 +37,21 @@ export function configureContainer(): DIContainer {
   })
 
   container.register(TOKENS.SUBSCRIPTION_USE_CASE, async () => {
-    const subscriberRepository = await container.resolve(TOKENS.SUBSCRIBER_REPOSITORY)
-    const emailService = await container.resolve(TOKENS.EMAIL_SERVICE)
+    const subscriberRepository = (await container.resolve(
+      TOKENS.SUBSCRIBER_REPOSITORY
+    )) as SubscriberRepository
+    const emailService = (await container.resolve(TOKENS.EMAIL_SERVICE)) as EmailService
     return new SubscriptionUseCase(subscriberRepository, emailService)
   })
 
   container.register(TOKENS.NEWSLETTER_SENDING_USE_CASE, async () => {
-    const subscriberRepository = await container.resolve(TOKENS.SUBSCRIBER_REPOSITORY)
-    const newsletterRepository = await container.resolve(TOKENS.NEWSLETTER_REPOSITORY)
-    const emailService = await container.resolve(TOKENS.EMAIL_SERVICE)
+    const subscriberRepository = (await container.resolve(
+      TOKENS.SUBSCRIBER_REPOSITORY
+    )) as SubscriberRepository
+    const newsletterRepository = (await container.resolve(
+      TOKENS.NEWSLETTER_REPOSITORY
+    )) as NewsletterRepository
+    const emailService = (await container.resolve(TOKENS.EMAIL_SERVICE)) as EmailService
     return new NewsletterSendingUseCase(subscriberRepository, newsletterRepository, emailService)
   })
 

@@ -1,4 +1,4 @@
-import { SubscriberRepository } from '../../domain/repositories/SubscriberRepository'
+import type { SubscriberRepository } from '../../domain/repositories/SubscriberRepository'
 import { Subscriber, SubscriberStatus } from '../../domain/entities/Subscriber'
 import { tursoClient } from '../database/turso-client'
 
@@ -60,7 +60,7 @@ export class TursoSubscriberRepository implements SubscriberRepository {
       email,
     ])
 
-    if (result.rows.length === 0) {
+    if (result.rows.length === 0 || !result.rows[0]) {
       return null
     }
 
@@ -73,7 +73,7 @@ export class TursoSubscriberRepository implements SubscriberRepository {
       [token]
     )
 
-    if (result.rows.length === 0) {
+    if (result.rows.length === 0 || !result.rows[0]) {
       return null
     }
 
@@ -83,7 +83,7 @@ export class TursoSubscriberRepository implements SubscriberRepository {
   async findById(id: string): Promise<Subscriber | null> {
     const result = await tursoClient.execute('SELECT * FROM subscribers WHERE id = ? LIMIT 1', [id])
 
-    if (result.rows.length === 0) {
+    if (result.rows.length === 0 || !result.rows[0]) {
       return null
     }
 
@@ -113,7 +113,7 @@ export class TursoSubscriberRepository implements SubscriberRepository {
       [SubscriberStatus.CONFIRMED]
     )
 
-    return result.rows[0].count as number
+    return (result.rows[0]?.count as number) ?? 0
   }
 
   async findAllPending(): Promise<Subscriber[]> {
@@ -161,7 +161,7 @@ export class TursoSubscriberRepository implements SubscriberRepository {
       [SubscriberStatus.PENDING_CONFIRMATION]
     )
 
-    return result.rows[0].count as number
+    return (result.rows[0]?.count as number) ?? 0
   }
 
   async getUnsubscribedCount(): Promise<number> {
@@ -170,12 +170,12 @@ export class TursoSubscriberRepository implements SubscriberRepository {
       [SubscriberStatus.UNSUBSCRIBED]
     )
 
-    return result.rows[0].count as number
+    return (result.rows[0]?.count as number) ?? 0
   }
 
   async getTotalCount(): Promise<number> {
     const result = await tursoClient.execute('SELECT COUNT(*) as count FROM subscribers')
-    return result.rows[0].count as number
+    return (result.rows[0]?.count as number) ?? 0
   }
 
   async getSubscriptionStats(): Promise<{
@@ -198,14 +198,32 @@ export class TursoSubscriberRepository implements SubscriberRepository {
    * Converte uma linha do banco em uma entidade Subscriber
    */
   private rowToSubscriber(row: Record<string, unknown>): Subscriber {
-    return Subscriber.fromPersistence({
+    interface SubscriberData {
+      id: string
+      email: string
+      status: SubscriberStatus
+      subscribedAt: Date
+      unsubscribeToken: string
+      confirmedAt?: Date
+      unsubscribedAt?: Date
+    }
+
+    const data: SubscriberData = {
       id: row.id as string,
       email: row.email as string,
       status: row.status as SubscriberStatus,
       subscribedAt: new Date(row.subscribed_at as string),
       unsubscribeToken: row.unsubscribe_token as string,
-      confirmedAt: row.confirmed_at ? new Date(row.confirmed_at as string) : undefined,
-      unsubscribedAt: row.unsubscribed_at ? new Date(row.unsubscribed_at as string) : undefined,
-    })
+    }
+
+    if (row.confirmed_at) {
+      data.confirmedAt = new Date(row.confirmed_at as string)
+    }
+
+    if (row.unsubscribed_at) {
+      data.unsubscribedAt = new Date(row.unsubscribed_at as string)
+    }
+
+    return Subscriber.fromPersistence(data)
   }
 }

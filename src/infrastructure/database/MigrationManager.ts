@@ -67,7 +67,10 @@ export class MigrationManager {
       throw new Error(`Migration ${version} not found`)
     }
 
-    const rollbackSql = result.rows[0].rollback_sql as string
+    const rollbackSql = result.rows[0]?.rollback_sql as string
+    if (!rollbackSql) {
+      throw new Error(`No rollback SQL found for migration ${version}`)
+    }
 
     try {
       await tursoClient.transaction(async tx => {
@@ -189,7 +192,7 @@ export class MigrationManager {
       )
 
       if (result.rows.length > 0) {
-        const storedChecksum = result.rows[0].checksum as string
+        const storedChecksum = result.rows[0]?.checksum as string
         const currentChecksum = this.calculateChecksum(migration.up)
 
         if (storedChecksum !== currentChecksum) {

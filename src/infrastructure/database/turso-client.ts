@@ -1,4 +1,4 @@
-import { createClient, type Client } from '@libsql/client'
+import { createClient, type Client, type ResultSet, type InArgs } from '@libsql/client'
 
 /**
  * Turso Database Client Configuration
@@ -41,9 +41,13 @@ class TursoClient {
   /**
    * Execute uma query com tratamento de erros
    */
-  public async execute(sql: string, args?: unknown[]) {
+  public async execute(sql: string, args?: InArgs) {
     try {
-      return await this.client.execute({ sql, args })
+      if (args === undefined) {
+        return await this.client.execute(sql)
+      } else {
+        return await this.client.execute({ sql, args })
+      }
     } catch (error) {
       console.error('Turso query error:', error)
       throw error
@@ -53,9 +57,9 @@ class TursoClient {
   /**
    * Execute múltiplas queries em uma transação usando batch
    */
-  public async batch(queries: Array<{ sql: string; args?: unknown[] }>) {
+  public async batch(queries: Array<{ sql: string; args?: InArgs }>) {
     try {
-      return await this.client.batch(queries.map(({ sql, args }) => ({ sql, args })))
+      return await this.client.batch(queries)
     } catch (error) {
       console.error('Turso batch error:', error)
       throw error
@@ -66,18 +70,27 @@ class TursoClient {
    * Execute múltiplas queries em uma transação com callback
    */
   public async transaction<T>(
-    callback: (tx: {
-      execute: (sql: string, args?: unknown[]) => Promise<ClientResult>
-    }) => Promise<T>
+    callback: (tx: { execute: (sql: string, args?: InArgs) => Promise<ResultSet> }) => Promise<T>
   ): Promise<T> {
     try {
       // Para Turso, vamos simular transação coletando as queries e executando como batch
-      const queries: Array<{ sql: string; args?: unknown[] }> = []
+      const queries: Array<{ sql: string; args?: InArgs }> = []
 
       const tx = {
-        execute: (sql: string, args?: unknown[]) => {
-          queries.push({ sql, args })
-          return Promise.resolve({ rows: [], rowsAffected: 0 })
+        execute: (sql: string, args?: InArgs): Promise<ResultSet> => {
+          const query: { sql: string; args?: InArgs } = { sql }
+          if (args !== undefined) {
+            query.args = args
+          }
+          queries.push(query)
+          return Promise.resolve({
+            rows: [],
+            rowsAffected: 0,
+            lastInsertRowid: undefined,
+            columnTypes: [],
+            columns: [],
+            toJSON: () => ({}),
+          } as ResultSet)
         },
       }
 
@@ -97,20 +110,18 @@ class TursoClient {
   /**
    * Fechar conexão (útil para testes)
    */
-  public async close() {
-    await this.client.close()
+  public close() {
+    return this.client.close()
   }
 }
 
 // Lazy initialization - criado apenas quando necessário
 export const tursoClient = {
-  execute: (sql: string, args?: unknown[]) => TursoClient.getInstance().execute(sql, args),
-  batch: (queries: Array<{ sql: string; args?: unknown[] }>) =>
+  execute: (sql: string, args?: InArgs) => TursoClient.getInstance().execute(sql, args),
+  batch: (queries: Array<{ sql: string; args?: InArgs }>) =>
     TursoClient.getInstance().batch(queries),
   transaction: <T>(
-    callback: (tx: {
-      execute: (sql: string, args?: unknown[]) => Promise<ClientResult>
-    }) => Promise<T>
+    callback: (tx: { execute: (sql: string, args?: InArgs) => Promise<ResultSet> }) => Promise<T>
   ) => TursoClient.getInstance().transaction(callback),
   close: () => TursoClient.getInstance().close(),
 }
