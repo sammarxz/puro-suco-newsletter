@@ -83,7 +83,7 @@ function isDraftFile(filename: string): boolean {
 }
 
 // Watcher principal
-const watcher = watch(NEWSLETTERS_PATH, { recursive: true }, async (eventType, filename) => {
+const watcher = watch(NEWSLETTERS_PATH, async (eventType, filename) => {
   if (!filename) return
 
   const fullPath = join(NEWSLETTERS_PATH, filename)

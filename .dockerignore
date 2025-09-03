@@ -1,0 +1,41 @@
+node_modules
+npm-debug.log
+.env
+.env.local
+.env.example
+dist
+.astro
+.git
+.gitignore
+README.md
+.dockerignore
+Dockerfile
+fly.toml
+
+# Development files
+.vscode
+.idea
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test files
+coverage
+*.test.js
+*.spec.js
+
+# Log files
+*.log
+
+# Cache directories
+.cache
+.parcel-cache
+.turbo
+
+# React Email build
+.react-email
+
+# Screenshots and images not needed in production
+Screenshot*.png
+preview.png
