@@ -10,6 +10,7 @@
     "astro": "astro",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.astro",
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx,.astro --fix",
+    "email:dev": "email dev",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "type-check": "astro check",
@@ -37,10 +38,12 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.4",
-    "@astrojs/cloudflare": "^12.6.4",
+    "@react-email/preview-server": "^4.2.8",
     "@tailwindcss/typography": "^0.5.16",
     "@types/node": "^24.3.0",
-    "@vitest/ui": "^2.1.8",
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.1.9",
+    "@vitest/ui": "^3.2.4",
     "astro-eslint-parser": "^1.2.2",
     "dotenv": "^17.2.1",
     "eslint": "^9.33.0",
@@ -52,6 +55,6 @@
     "tsx": "^4.20.4",
     "typescript": "^5.9.2",
     "typescript-eslint": "^8.40.0",
-    "vitest": "^2.1.8"
+    "vitest": "^3.2.4"
   }
 }
