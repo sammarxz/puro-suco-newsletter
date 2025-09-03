@@ -38,5 +38,5 @@ export function createConfirmationUrl(token: string): string {
  * Get logo URL
  */
 export function getLogoUrl(): string {
-  return createSiteUrl('/logo.svg')
+  return createSiteUrl('/logo.png')
 }
