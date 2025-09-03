@@ -1,0 +1,45 @@
+---
+export interface Props {
+  variant?: 'default' | 'featured' | 'latest' | 'custom'
+  class?: string
+  customColors?: {
+    bg: string
+    text: string
+    border?: string
+  }
+}
+
+const { variant = 'default', class: className = '', customColors } = Astro.props
+
+// Define variant styles
+const variants = {
+  default: {
+    bg: 'bg-gray-100',
+    text: 'text-gray-600',
+    border: 'border-gray-200',
+  },
+  featured: {
+    bg: 'bg-amber-100',
+    text: 'text-amber-700',
+    border: 'border-amber-200',
+  },
+  latest: {
+    bg: 'bg-amber-200',
+    text: 'text-amber-800',
+    border: 'border-amber-300',
+  },
+}
+
+// Get styles based on variant or custom colors
+const styles = customColors || variants[variant as keyof typeof variants] || variants.default
+
+// Build classes with optional border
+const baseClasses = 'text-xs font-medium px-3 py-1 rounded-full inline-flex items-center'
+const variantClasses = `${styles.bg} ${styles.text}`
+const borderClasses = styles.border ? styles.border : ''
+const finalClasses = `${baseClasses} ${variantClasses} ${borderClasses} ${className}`.trim()
+---
+
+<span class={finalClasses}>
+  <slot />
+</span>
