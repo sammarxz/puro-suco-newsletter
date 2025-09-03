@@ -1,0 +1,85 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { container, TOKENS } from '../../lib/container/bindings'
+import { SubscriptionUseCase } from '../../domain/usecases/SubscriptionUseCase'
+
+export async function getStaticPaths() {
+  return []
+}
+
+const { token } = Astro.params
+
+if (!token) {
+  return Astro.redirect('/404')
+}
+
+let confirmationResult = null
+let error = null
+
+try {
+  const subscriptionUseCase = await container.resolve<SubscriptionUseCase>(
+    TOKENS.SUBSCRIPTION_USE_CASE
+  )
+
+  const baseUrl = Astro.url.origin
+  confirmationResult = await subscriptionUseCase.confirmSubscription(token, baseUrl)
+} catch (e) {
+  error = 'Erro interno na confirmação'
+  console.error('Confirmation error:', e)
+}
+---
+
+<BaseLayout title="Confirmação de Inscrição - Puro Suco">
+  <main class="container max-w-md mx-auto px-6">
+    <div class="min-h-dvh flex items-center justify-center">
+      <div class="text-left">
+        <div class="mb-6">
+          <a href="/">
+            <img src="/logo.svg" alt="Logo Puro Suco" class="w-12 h-12" />
+          </a>
+        </div>
+
+        {
+          confirmationResult && confirmationResult.success ? (
+            <div class="space-y-8">
+              <h1 class="text-2xl md:text-5xl font-serif text-gray-900">
+                Email confirmado com sucesso!
+              </h1>
+              <p class="text-gray-700 mt-4 text-lg">
+                Bem-vindo ao <strong>Puro Suco</strong>! Você receberá nossa newsletter toda
+                segunda-feira.
+              </p>
+              <div class="pt-4">
+                <a
+                  href="/"
+                  class="inline-block bg-amber-500 hover:bg-amber-400 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                >
+                  Voltar ao início
+                </a>
+              </div>
+            </div>
+          ) : (
+            <div class="space-y-4">
+              <div class="text-6xl">❌</div>
+              <h1 class="text-2xl md:text-3xl font-serif text-gray-900">Erro na confirmação</h1>
+              <p class="text-gray-700">
+                {confirmationResult?.message || error || 'Token inválido ou expirado'}
+              </p>
+              <div class="pt-4 space-y-2">
+                <a
+                  href="/"
+                  class="inline-block bg-amber-500 hover:bg-amber-400 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                >
+                  Tentar novamente
+                </a>
+                <p class="text-sm text-gray-500">
+                  Se o problema persistir, entre em contato conosco.
+                </p>
+              </div>
+            </div>
+          )
+        }
+      </div>
+    </div>
+  </main>
+</BaseLayout>
