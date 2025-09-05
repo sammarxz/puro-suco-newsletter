@@ -17,39 +17,6 @@ Newsletter semanal com as melhores notícias de **tech**, **desenvolvimento** e 
 - **Clean Architecture** - Arquitetura de software escalável
 - **Vitest** - Framework de testes rápido e moderno
 
-## 🏗️ Arquitetura
-
-O projeto segue os princípios da Clean Architecture com uma estrutura bem definida:
-
-```
-├── emails/                  # Sistema de templates de email
-│   ├── components/          # Componentes reutilizáveis para email
-│   ├── styles/             # Design tokens e estilos para email
-│   ├── templates/          # Templates de email (newsletter, welcome, confirmation)
-│   └── utils/              # Utilitários para email
-├── src/
-│   ├── components/          # Componentes UI reutilizáveis
-│   │   └── ui/             # Componentes de interface específicos
-│   ├── content/            # Content collections (newsletters)
-│   ├── domain/             # Entidades e regras de negócio
-│   │   ├── entities/       # Entidades do domínio
-│   │   ├── repositories/   # Interfaces dos repositórios
-│   │   ├── services/       # Interfaces dos serviços
-│   │   └── usecases/       # Casos de uso da aplicação
-│   ├── infrastructure/     # Implementações externas
-│   │   ├── database/       # Cliente e migrações do banco
-│   │   ├── email/          # Serviços de email
-│   │   └── repositories/   # Implementações dos repositórios
-│   ├── layouts/            # Layouts do Astro
-│   ├── lib/               # Utilitários e serviços
-│   │   ├── container/      # Dependency injection container
-│   │   ├── errors/         # Error handling
-│   │   ├── services/       # Serviços da aplicação
-│   │   └── utils/          # Funções utilitárias
-│   ├── pages/             # Rotas e API endpoints
-│   └── styles/            # Estilos globais e configurações CSS
-```
-
 ## 🛠️ Desenvolvimento
 
 ### Pré-requisitos
